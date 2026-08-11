@@ -1,0 +1,357 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Glam Reference Prompt Generator</title>
+<style>
+:root{
+  --blue:#168FEA; --deep:#103B63; --black:#171A1E; --silver:#dce2e8; --white:#fff;
+  --muted:#aeb9c4; --panel:#11161c; --panel2:#171e26; --line:#2a3540;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:linear-gradient(180deg,#0a0d11,#111821 55%,#0a0d11);color:var(--white)}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+.shell{max-width:1480px;margin:0 auto;padding:20px}
+.hero{background:linear-gradient(135deg,rgba(22,143,234,.18),rgba(16,59,99,.18) 55%,rgba(255,255,255,.04));border:1px solid #27465f;border-radius:24px;padding:24px;box-shadow:0 20px 60px rgba(0,0,0,.35)}
+.hero h1{margin:0 0 6px;font-size:clamp(28px,4vw,48px);letter-spacing:-.03em}
+.hero p{margin:0;color:#c6d2dc;max-width:900px;line-height:1.55}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+.btn{border:1px solid #3a4a58;background:#17212b;color:#fff;padding:11px 15px;border-radius:12px;font-weight:700}
+.btn.primary{background:var(--blue);border-color:var(--blue);color:#041018}
+.btn:hover{filter:brightness(1.08)}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0}
+.tab{background:#0f151c;border:1px solid var(--line);color:#d9e3ea;padding:10px 14px;border-radius:999px}
+.tab.active{background:var(--blue);border-color:var(--blue);color:#061017;font-weight:800}
+.panel{display:none}.panel.active{display:block}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(245px,1fr));gap:16px}
+.card{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:18px;overflow:hidden}
+.card img{width:100%;height:270px;object-fit:cover;background:#080b0f}
+.card-body{padding:14px}
+.card h3{margin:0 0 8px;font-size:17px}
+.muted{color:var(--muted);font-size:13px;line-height:1.45}
+.checkline{display:flex;gap:9px;align-items:flex-start;margin:9px 0}
+.checkline input{margin-top:3px;accent-color:var(--blue)}
+.preset{padding:10px;border:1px solid #2e3944;border-radius:12px;background:#10161c;margin-top:8px}
+.preset strong{font-size:14px}
+.preset small{display:block;color:#9fb0bd;margin-top:4px}
+.options-wrap{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px}
+.opt-card{background:#111820;border:1px solid var(--line);border-radius:16px;padding:14px}
+.opt-card h3{margin:0 0 10px}
+.choice{display:flex;gap:8px;align-items:flex-start;padding:6px 0;color:#dce6ee;font-size:14px}
+.choice input{accent-color:var(--blue);margin-top:2px}
+.field{display:grid;gap:6px;margin-top:10px}
+.field label{font-weight:700;font-size:13px}
+.field input,.field textarea,.field select{width:100%;background:#0b1117;border:1px solid #33414e;color:white;border-radius:10px;padding:10px}
+.field textarea{min-height:90px;resize:vertical}
+.output{background:#090e13;border:1px solid #2d3b47;border-radius:18px;padding:16px;margin-top:18px}
+.output textarea{width:100%;min-height:260px;background:#06090c;color:#eaf2f8;border:1px solid #26323c;border-radius:14px;padding:14px;line-height:1.55}
+.count{color:#9fb1bf;font-size:13px}
+.selected-bar{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.pill{background:#152536;border:1px solid #27506f;color:#dff1ff;border-radius:999px;padding:7px 10px;font-size:12px}
+.help{background:#0c1821;border:1px solid #24465f;border-radius:14px;padding:12px;margin:14px 0;color:#cfe8fa}
+.section-title{margin:22px 0 12px;font-size:22px}
+
+.component-toggle{margin-top:9px;width:100%;text-align:left;background:#0b1218;border:1px solid #31404c;color:#dce8f0;padding:9px 10px;border-radius:10px;font-weight:700}
+.component-box{display:none;margin-top:8px;padding:10px;background:#0b1015;border:1px solid #27333d;border-radius:10px}
+.component-box.open{display:block}
+.component-title{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:#78c5ff;font-weight:800;margin:8px 0 3px}
+.component-choice{display:flex;gap:8px;align-items:flex-start;padding:5px 0;font-size:12px;line-height:1.4;color:#cbd8e1}
+.component-choice input{accent-color:var(--blue);margin-top:2px}
+.mini-actions{display:flex;gap:6px;margin:6px 0 4px;flex-wrap:wrap}
+.mini-btn{background:#12202b;color:#dceaf3;border:1px solid #2e4658;border-radius:8px;padding:6px 8px;font-size:11px;font-weight:700}
+
+@media(max-width:700px){
+  .shell{padding:12px}
+  .hero{padding:18px}
+  .card img{height:220px}
+  .toolbar .btn{flex:1 1 46%}
+}
+</style>
+</head>
+<body>
+<div class="shell">
+  <section class="hero">
+    <h1>Glam Reference Prompt Generator</h1>
+    <p>Select one or more image references, mix multiple presets, add style choices, then layer typography or turn the idea into a T-shirt design or repeating pattern. Everything is multi-select so you can remix freely—even individual pieces from different presets.</p>
+    <div class="toolbar">
+      <button class="btn primary" id="generateBtn">Generate Prompt</button>
+      <button class="btn" id="copyBtn">Copy Prompt</button>
+      <button class="btn" id="remixBtn">Remix</button>
+      <button class="btn" id="surpriseBtn">Surprise Me</button>
+      <button class="btn" id="clearBtn">Clear</button>
+    </div>
+  </section>
+
+  <div class="tabs">
+    <button class="tab active" data-tab="references">1. References + Presets</button>
+    <button class="tab" data-tab="style">2. Style Options</button>
+    <button class="tab" data-tab="typography">3. Typography Layer</button>
+    <button class="tab" data-tab="product">4. Product / Pattern</button>
+    <button class="tab" data-tab="output">5. Final Prompt</button>
+  </div>
+
+  <section class="panel active" id="references">
+    <div class="help"><strong>Beginner tip:</strong> Check the image references you like. Check a full preset, or open “Mix individual pieces” to take only the hair, makeup, outfit, pose, background, lighting, accessories, or rendering details you want. You can combine as many as you like.</div>
+    <div id="referenceGrid" class="grid"></div>
+  </section>
+
+  <section class="panel" id="style">
+    <h2 class="section-title">Style Options</h2>
+    <div class="options-wrap" id="styleOptions"></div>
+  </section>
+
+  <section class="panel" id="typography">
+    <h2 class="section-title">Typography Layer</h2>
+    <div class="help">Use this only when you want wording in the artwork. Leave it blank for image-only prompts.</div>
+    <div class="options-wrap">
+      <div class="opt-card">
+        <div class="field"><label>Exact wording</label><input id="textExact" placeholder="Example: CREATE IT. SELL IT. GLOW UP."/></div>
+        <div class="field"><label>Typography styles — choose more than one</label><div id="typeStyles"></div></div>
+      </div>
+      <div class="opt-card">
+        <div class="field"><label>Placement</label><div id="typePlacement"></div></div>
+        <div class="field"><label>Effects</label><div id="typeEffects"></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel" id="product">
+    <h2 class="section-title">Turn It Into a Product</h2>
+    <div class="options-wrap">
+      <div class="opt-card">
+        <h3>Output Format</h3>
+        <div id="productFormats"></div>
+      </div>
+      <div class="opt-card">
+        <h3>Design Treatment</h3>
+        <div id="productTreatments"></div>
+      </div>
+      <div class="opt-card">
+        <div class="field"><label>Extra product notes</label><textarea id="productNotes" placeholder="Example: transparent background, centered chest graphic, print-ready, no mockup"></textarea></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel" id="output">
+    <h2 class="section-title">Your Final Prompt</h2>
+    <div class="selected-bar" id="selectedPills"></div>
+    <div class="output">
+      <textarea id="promptOutput" placeholder="Your combined prompt will appear here..."></textarea>
+      <div class="count" id="count"></div>
+    </div>
+  </section>
+</div>
+
+<script>
+const REFS = [{"id": 1, "name": "Image 1 — Extra-Long Braided Pigtails", "image": "images/image-01.png", "presets": [{"name": "Sapphire Glam Braids", "prompt": "Create a polished semi-realistic 3D beauty portrait of a stylish adult Black woman with warm deep-brown skin, oversized expressive almond-shaped brown eyes, dramatic curled lashes, sculpted eyebrows, luminous smooth skin, softly highlighted cheeks, and full glossy nude lips. Style her hair in an immaculate center part with delicate sculpted baby hairs and two extremely long, thick rope-braided pigtails falling past her waist. Dress her in a fitted Caribbean-sapphire-blue ribbed crop top with an elegant black cardigan slipping naturally from one shoulder, fitted dark denim, sleek silver hoop earrings, layered metallic-silver necklaces, and a polished silver watch. Pose her seated with one hand gently resting against her cheek. Use a soft black-to-deep-sapphire studio background, subtle reflected light, shallow depth of field, luxury editorial beauty lighting, realistic hair shine, refined skin texture, sophisticated feminine styling, high-end digital character illustration, no text."}, {"name": "Soft Neutral Beauty", "prompt": "Create an elegant doll-inspired portrait of an adult Black woman with rich caramel-brown skin, huge warm hazel-brown eyes, long dramatic lashes, full glossy mocha-nude lips, sculpted brows, softly blushed cheeks, and radiant satin-finish skin. Give her sleek dark-brown hair separated into a clean middle part with beautifully laid baby hairs and two massive waist-length braided pigtails. Dress her in a cream knit fitted tank, an oversized oatmeal cardigan draped off both shoulders, high-waisted medium-wash jeans, thin gold hoops, delicate layered necklaces, and a luxury gold wristwatch. Show her sitting comfortably on a cream sofa with her fingertips lightly touching her jaw. Warm beige interior, creamy background blur, golden-hour beauty lighting, soft shadows, realistic materials, premium 3D illustration, feminine and sophisticated."}, {"name": "Black Editorial", "prompt": "Create a dramatic luxury character portrait of an adult dark-skinned Black woman with exaggerated doll-inspired almond eyes, jet-black lashes, polished brows, glossy cocoa lips, softly glowing cheekbones, and beautifully realistic skin. Her sleek black hair is styled into two incredibly thick floor-length braided ponytails with a sharp center part and carefully swooped baby hairs. Dress her entirely in sleek black: fitted cropped top, fitted trousers, silver geometric earrings, layered silver chains, and a sculptural silver cuff bracelet. Pose her with one elbow resting on a chair and her hand gracefully supporting her face. Minimal charcoal studio backdrop, directional softbox lighting, silver rim highlights, deep shadows, fashion editorial composition, realistic hair fibers, cinematic luxury 3D rendering, no typography."}, {"name": "Casual Weekend Glam", "prompt": "Create a fun upscale digital portrait of a curvy adult Black woman with warm brown skin, large chocolate-brown doll eyes, fluttering lashes, glossy peach lips, expressive brows, and radiant healthy skin. Give her thick dark-brown hair styled into two giant braided pigtails with a clean center part and swooped edges. Dress her in a fitted white tank, oversized cropped denim jacket slipping from one shoulder, distressed high-waisted jeans, chunky silver hoops, layered chains, and a stack of elegant bracelets. Place her at a chic café table with one hand beneath her chin and a coffee beside her. Soft daylight through large windows, modern blurred café interior, high-end social-media fashion portrait, semi-realistic 3D illustration, crisp details and polished finish."}]}, {"id": 2, "name": "Image 2 — Curly Ponytail Fantasy Garden", "image": "images/image-02.png", "presets": [{"name": "Sapphire Butterfly Garden", "prompt": "Create a dreamy semi-realistic 3D illustration of an adult dark-skinned Black woman with enormous luminous brown eyes, dramatic curled lashes, softly shimmering sapphire eye makeup, glowing cheeks, and glossy berry-nude lips. Give her intricate micro-braids transitioning into voluminous waist-length spiral curls, gathered into a high cascading ponytail. Dress her in a fitted shimmering white T-shirt and a flowing black skirt decorated with subtle Caribbean-sapphire floral embroidery. Place her along an enchanted garden pathway overflowing with blue hydrangeas, white roses, luminous greenery, and only two elegant metallic-silver butterflies. Add soft sapphire illumination between the trees, subtle pearl-like sparkles, dreamy depth of field, warm romantic expression, polished fantasy editorial lighting, luxurious digital character art."}, {"name": "Sunset Flower Garden", "prompt": "Create a beautiful adult Black woman in high-detail doll-inspired digital art with deep mahogany skin, oversized amber eyes, long feathery lashes, glossy rose lips, and soft coral-and-gold eye makeup. Her hair is styled in hundreds of tiny dark braids at the crown that transition into a huge textured curly ponytail cascading down her back. Dress her in a fitted ivory T-shirt and a flowing dark floral midi skirt. Surround her with a lush garden of peach roses, coral peonies, wildflowers, glowing firefly-like lights, and soft butterflies. Golden-pink sunset lighting pours through the trees, creating a romantic fairy-tale atmosphere. Sophisticated adult styling, realistic flowers, detailed curls, glossy dimensional rendering."}, {"name": "Lavender Moon Garden", "prompt": "Create an enchanting nighttime portrait of an adult Black woman with luminous dark skin, large almond-shaped brown eyes, violet shimmer eyeshadow, dramatic lashes, glossy plum-pink lips, and delicately highlighted cheeks. Style her hair in micro-braided roots flowing into long glossy curls gathered into an oversized high ponytail. Dress her in a simple fitted lavender top and flowing black satin skirt. Place her in an extravagant moonlit flower garden filled with lavender roses, white blossoms, soft violet haze, and tiny glowing lights. A silver crescent moon is visible through the trees while two delicate butterflies hover nearby. Deep purple, silver, black, and luminous white palette, cinematic lighting, elegant fantasy realism, polished 3D illustration."}, {"name": "Spring Meadow", "prompt": "Create a cheerful luxury digital character portrait of a curvy adult Black woman with deep cocoa skin, oversized bright brown eyes, long lashes, warm blush, glossy pink lips, and subtle sparkling eye makeup. Give her a magnificent long curly ponytail created from fine twists transitioning into loose spiral curls. Dress her in a fitted soft-blue tee and a high-waisted flowing botanical-print skirt. Place her walking through a sunny spring garden overflowing with vivid tulips, roses, flowering trees, and drifting petals. Add natural sunlight, gentle bokeh, a few tasteful butterflies, lush depth, polished animated-film-quality character rendering, sophisticated adult appearance."}]}, {"id": 3, "name": "Image 3 — Pink Flowers Beauty Portrait", "image": "images/image-03.png", "presets": [{"name": "Sapphire Floral Beauty", "prompt": "Create an extreme close-up luxury beauty portrait of an adult Black woman with rich caramel-brown skin, enormous warm brown almond eyes, sweeping dramatic lashes, sculpted brows, flawless softly luminous skin, and full glossy mocha-nude lips. Surround her face with long, defined glossy black curls and carefully laid baby hairs. Weave several realistic Caribbean-sapphire-blue flowers throughout her curls, balanced around the composition without overcrowding. Give her shimmering sapphire and metallic-silver winged eye makeup with luminous white inner corners. Her manicured fingertips rest elegantly beneath her chin. Add delicate silver necklaces, subtle diamond-like studs, soft studio illumination, highly detailed skin and hair, polished semi-realistic 3D beauty illustration, editorial cosmetics campaign quality."}, {"name": "White Orchid Portrait", "prompt": "Create a glamorous close-up digital portrait of an adult dark-skinned Black woman with enormous chocolate-brown eyes, dramatic lashes, warm highlighted skin, glossy nude lips, and thick waist-length jet-black curls. Place elegant luminous white orchid blossoms naturally throughout her hair. Use soft champagne and pearl-white eye makeup with precise winged liner. Pose one hand gently under her jaw, showing polished almond-shaped nude nails. Add understated gold jewelry. Cream background with glowing soft-focus light, clean luxury beauty photography composition translated into refined semi-realistic digital art."}, {"name": "Crimson Floral Glam", "prompt": "Create a bold beauty-editorial portrait of an adult Black woman with deep warm-brown skin, oversized doll-inspired hazel eyes, very long lashes, sculpted cheekbones, glossy burgundy-nude lips, and flowing black curls. Add rich crimson flowers arranged asymmetrically within her hair. Her makeup includes deep wine-red eye shadow fading into bronze, sharp black eyeliner, and radiant inner-corner highlights. Dress her in a simple black satin neckline with minimal gold jewelry. Dark blurred background, controlled studio lighting, high contrast, glossy dimensional finish, seductive but sophisticated adult glamour."}, {"name": "Butterfly Beauty", "prompt": "Create a refined close-up portrait of an adult Black woman with warm mocha skin, huge luminous brown eyes, glossy nude-pink lips, defined eyebrows, softly contoured cheeks, and voluminous black curls framing her face. Instead of flowers, incorporate only three elegant metallic-silver butterflies resting naturally within sections of her curls. Use silver and Caribbean-sapphire eye makeup with clean winged liner. She wears layered silver chains and a sapphire satin top barely visible at the bottom of the composition. Soft sapphire background glow, polished editorial lighting, hyper-detailed semi-realistic 3D illustration, uncluttered luxury composition."}]}, {"id": 4, "name": "Image 4 — Glam Headphones + Oversized Jersey", "image": "images/image-04.png", "presets": [{"name": "Sapphire Music Muse", "prompt": "Create a luxury semi-realistic digital portrait of an adult dark-skinned Black woman enjoying music with her eyes gently closed. Give her waist-length glossy jet-black hair in a high ponytail with a dramatic side-swept fringe partially covering one eye. Place oversized Caribbean-sapphire headphones over her ears, covered with realistic metallic-silver crystal embellishments that catch the light. Dress her in an oversized glossy sapphire-and-black mesh sports jersey with clean silver trim and the number 24 displayed clearly on the front. Add a delicate silver necklace. Deep sapphire studio background fading into sleek black, subtle star-like reflections, dramatic side lighting, glossy fabric textures, confident music-fashion editorial mood."}, {"name": "Silver Streetwear", "prompt": "Create an adult Black woman with deep warm-brown skin, extremely long straight black hair, dramatic side bangs, glossy nude lips, long lashes, and relaxed closed eyes. She wears oversized reflective silver headphones with tiny crystal details and an oversized black-and-silver athletic jersey with a large clean number 08 on the front. Pose her gently swaying as though listening to her favorite song. Minimal dark charcoal studio backdrop, silver rim lighting, realistic metallic highlights, premium streetwear campaign styling, sophisticated 3D character illustration."}, {"name": "Pink Retro Music", "prompt": "Create a glamorous adult Black woman with deep cocoa skin, long silky black hair falling past her hips, side-swept bangs, shimmering plum eyeshadow, glossy pink lips, and soft radiant skin. Give her oversized crystal-studded hot-pink headphones and a loose vintage-inspired pink-and-burgundy jersey. Show her eyes closed and shoulders slightly raised as she enjoys the music. Background filled with diffused magenta and violet studio lighting, restrained sparkles, 2000s-inspired feminine streetwear energy, polished editorial digital rendering."}, {"name": "Cozy Music Night", "prompt": "Create a stylish curvy adult Black woman relaxing in a luxurious modern bedroom at night, wearing oversized sparkling sapphire headphones and an oversized black sports jersey with metallic-silver trim. Give her waist-length glossy straight hair with a soft side bang. She sits cross-legged on the edge of the bed with her eyes closed, peacefully listening to music. Add deep sapphire ambient lighting, black furnishings, white bedding, silver accents, realistic fabric folds, cinematic shadows, high-end digital character realism, intimate but polished composition."}]}, {"id": 5, "name": "Image 5 — Cropped Graphic Sweatshirt + Tattoos", "image": "images/image-05.png", "presets": [{"name": "Sapphire Streetwear", "prompt": "Create a full-body fashion illustration of a curvy adult Black woman with warm caramel-brown skin, oversized expressive brown eyes, dramatic lashes, glossy nude lips, and a confident playful expression. Style her jet-black hair into a loose oversized top bun with long face-framing tendrils and carefully laid edges. Dress her in an oversized shimmering-white cropped sweatshirt featuring an original abstract Caribbean-sapphire-and-black graphic design, paired with fitted high-waisted black shorts. Add large polished silver hoops and realistic black-and-gray floral tattoos across one hip and side of her waist. Pose with one arm raised above her head. Clean light-gray studio backdrop, soft directional lighting, glossy high-end semi-realistic 3D illustration."}, {"name": "Tattooed Denim Glam", "prompt": "Create a stylish adult Black woman with a full curvy figure, rich brown skin, large almond-shaped doll eyes, fluttering lashes, highlighted cheekbones, and glossy mocha lips. Her hair is arranged in a loose high bun with wispy strands framing her face. Dress her in an oversized cropped white pullover and distressed high-waisted denim shorts. Feature a large sophisticated black-and-gray peony tattoo wrapping naturally from her hip to upper thigh. Add silver hoops and layered bracelets. Pose with one hand in her hair and one hip angled toward the camera. Minimal studio background, beauty campaign lighting, polished digital character illustration."}, {"name": "Luxury Lounge Set", "prompt": "Create a glamorous curvy adult Black woman with glowing warm-brown skin, expressive oversized brown eyes, long lashes, and glossy nude lips. Style her hair in a messy black topknot with sculpted baby hairs. Dress her in a cropped oversized Caribbean-sapphire sweatshirt and matching sapphire jogger shorts with metallic-silver drawstring details. Add a detailed black floral tattoo along her outer thigh and lower waist. Pose standing casually against a sleek black wall with one arm overhead. Soft sapphire rim light, luxury streetwear editorial aesthetic, realistic material textures, refined semi-realistic 3D rendering."}, {"name": "Casual Sneaker Editorial", "prompt": "Create a full-length doll-inspired adult Black woman with rich brown skin, large brown eyes, full glossy lips, a curvy natural body shape, and long lashes. Give her a high messy bun and loose strands. Dress her in a cropped graphic sweatshirt, fitted biker shorts, and premium high-top sneakers. Include beautiful botanical black-and-gray tattoos on one thigh and lower abdomen. Pose her seated on a simple studio cube with one hand lifting her hair. Clean white-gray editorial background, modern fashion campaign composition, realistic cloth and tattoo detail, polished 3D character rendering."}]}, {"id": 6, "name": "Image 6 — Lounge Set, Phone + Cookie", "image": "images/image-06.png", "presets": [{"name": "Glam Hustle Night", "prompt": "Create a cozy semi-realistic digital lifestyle scene featuring a curvy adult Black woman with deep brown skin relaxing on a modern black sofa after a long workday. Style her black hair in an elegant oversized braided bun with two curled tendrils framing her face. Give her soft smoky eyes, long lashes, glossy nude lips, and glowing skin. Dress her in a matching Caribbean-sapphire lounge set with an off-the-shoulder knotted crop top and relaxed joggers. She holds a smartphone in one hand and a chocolate-chip cookie in the other. Place a small bowl of vanilla ice cream on the nearby table. Sleek black room, soft sapphire ambient light, metallic-silver decor accents, warm overhead lamp, cinematic cozy atmosphere, realistic textures, sophisticated adult character rendering."}, {"name": "Sunday Lounge", "prompt": "Create an adult Black woman with rich cocoa skin, beautiful almond eyes, glossy lips, and a high messy bun lounging comfortably on a cream sectional. Dress her in a soft oatmeal off-shoulder crop top and matching joggers. She scrolls casually through her phone while holding a cookie in her other hand. Add a coffee table with a small dessert, cozy throw blanket, neutral modern apartment, soft afternoon daylight, realistic relaxed pose, high-end semi-realistic character illustration."}, {"name": "Movie Night", "prompt": "Create a stylish curvy adult Black woman relaxing barefoot on a deep black sofa during movie night. Give her deep brown skin, a large braided topknot, delicate face-framing curls, dramatic lashes, and glossy cocoa lips. Dress her in a sleek black lounge set with silver piping. She holds her phone while reaching toward a bowl of popcorn beside her. Add soft television light, sapphire ambient illumination, a plush white throw, subtle metallic decor, cinematic depth of field, polished digital realism."}, {"name": "Creator Break", "prompt": "Create a modern adult Black female digital creator taking a break in her studio lounge. She has deep glowing brown skin, long lashes, softly contoured features, and black hair wrapped into an elegant high bun. Dress her in a comfortable sapphire-blue cropped lounge top and black joggers. She reclines on a chair while checking her phone and enjoying a small snack. In the background include a sleek desk and softly blurred monitor, but no fake dashboards or data graphics. Moody black studio, sapphire accent lighting, silver details, clean premium lifestyle composition."}]}, {"id": 7, "name": "Image 7 — Long Straight Hair + Tinted Glasses", "image": "images/image-07.png", "presets": [{"name": "Sapphire CEO Glam", "prompt": "Create a polished fashion portrait of a confident adult Black woman with deep warm-brown skin, very long pin-straight jet-black hair reaching below her hips, a clean center part, sculpted baby hairs, glossy nude lips, and dramatic lashes. Give her oversized square glasses with subtle sapphire-tinted lenses. Dress her in a sleek black fitted mini dress beneath an open Caribbean-sapphire fine-knit short-sleeve cardigan, paired with metallic-silver earrings. Place her standing in a sophisticated modern interior with deep black walls and sapphire accent lighting. Use cinematic shallow depth of field, warm skin illumination, strong editorial posture, luxury semi-realistic 3D character rendering."}, {"name": "All Black Minimalist", "prompt": "Create a striking adult Black woman with deep brown skin, waist-to-thigh-length straight black hair, centered part, immaculate edges, oversized amber-tinted square glasses, glossy brown lips, and elegant lashes. Dress her in a textured black crochet crop shirt layered over a fitted black top and a structured black mini skirt with a subtle side slit. Keep the setting minimalist with a warm blurred modern interior and dramatic directional lighting. High-end fashion campaign, realistic textures, poised stance, clean sophisticated composition."}, {"name": "Silver Night Out", "prompt": "Create a glamorous adult Black woman with rich brown skin, long sleek center-parted hair, oversized smoke-gray fashion glasses, sculpted eyebrows, dramatic lashes, and shiny mocha lips. Dress her in a metallic-silver camisole beneath a cropped black mesh shirt and fitted black skirt. Place her in an upscale rooftop lounge at night with softly blurred city lights behind her. Controlled reflective highlights, silver jewelry, subtle sapphire accents, fashion-editorial lighting, premium digital realism."}, {"name": "Luxe Leather", "prompt": "Create a confident adult Black woman with luminous deep-brown skin and extraordinarily long straight black hair falling past her waist. Add oversized rectangular tinted glasses and glossy nude lips. Dress her in a black cropped knit top paired with a high-waisted faux-leather pencil skirt and silver accessories. Place her against an elegant dark interior wall with warm recessed lighting. Strong fashion pose, cinematic shadows, refined luxury styling, clean background, semi-realistic high-end digital character artwork."}]}, {"id": 8, "name": "Image 8 — Red Hair + Space Buns", "image": "images/image-08.png", "presets": [{"name": "Sapphire Space Buns", "prompt": "Create a glamorous close-up portrait of an adult Black woman with rich deep-brown skin, oversized glossy brown eyes, dramatic lashes, beautifully sculpted brows, glossy mocha lips, and subtle silver nose jewelry. Give her long Caribbean-sapphire-black ombré hair with two playful high space buns and long sapphire face-framing pieces. Dress her in a fitted shimmering-white ringer T-shirt with black trim. Dark studio background, sapphire rim lighting, warm glow across her skin, realistic hair shine, sophisticated alternative beauty aesthetic, high-end semi-realistic digital illustration."}, {"name": "Burgundy Alt Glam", "prompt": "Create an adult Black woman with glowing chocolate skin, huge dark brown almond eyes, dramatic lashes, glossy caramel lips, small silver septum jewelry, and long burgundy-red hair styled with two loose space buns and straight flowing lengths. Dress her in a fitted cream T-shirt with burgundy trim. Use a dark blurred background with moody red-orange edge lighting, beauty-editorial depth of field, polished 3D character art."}, {"name": "Silver and Black Space Bun Look", "prompt": "Create a modern adult Black woman with deep brown skin, expressive oversized brown eyes, long lashes, glossy neutral lips, subtle nose piercings, and jet-black hair with metallic-silver streaks. Style two messy high buns while leaving the majority of the hair long and straight. Dress her in a fitted black-and-white cropped ringer tee. Minimal black studio backdrop, cool silver lighting, glossy finish, edgy feminine portrait, realistic skin texture and hair fibers."}, {"name": "Copper Fall Beauty", "prompt": "Create a sophisticated adult Black woman with deep luminous skin, large hazel-brown eyes, dramatic lashes, glossy cinnamon lips, and long copper-red hair styled into two soft space buns with flowing waves. Add small tasteful silver facial jewelry. Dress her in a cream knit top with chocolate-brown trim. Autumnal blurred background, warm amber rim lighting, rich cinematic tones, soft bokeh, premium doll-inspired digital beauty illustration."}]}, {"id": 9, "name": "Image 9 — Orange + Blonde Braided Fantasy Hair", "image": "images/image-09.png", "presets": [{"name": "Sapphire + Silver Fantasy Hair", "prompt": "Create a dramatic close-up portrait of an adult dark-skinned Black woman with luminous deep-brown skin, huge expressive brown eyes, long dramatic lashes, glossy nude-pink lips, and subtle silver nose jewelry. Give her extravagant waist-length waves in deep Caribbean sapphire blended with sleek black, while one side of her face is framed by thin shimmering-silver braids. Style the crown with two voluminous twisted buns. Dress her in a fitted black zip-front top with subtle silver hardware. Deep black-and-sapphire background, cool silver edge lighting, cinematic beauty illumination, ultra-detailed hair textures, luxury fantasy fashion portrait."}, {"name": "Copper and Gold", "prompt": "Create an adult Black woman with glowing dark caramel skin, large warm brown eyes, dramatic lashes, glossy coral-nude lips, and magnificent waist-length copper-orange curls. Incorporate honey-blonde micro-braids across one side and two soft curly buns at the crown. Dress her in a fitted black top with a gold zipper. Dark plum studio background, warm amber rim light, editorial beauty photography translated into semi-realistic digital art."}, {"name": "Plum + Rose Gold", "prompt": "Create a glamorous adult Black woman with deep brown skin, doll-inspired almond eyes, dramatic lashes, glossy berry lips, and long plum-colored waves. Add rose-gold micro-braids sweeping diagonally across the front and two elegant rounded buns. Style her in a sleek black sleeveless zip top with rose-gold hardware. Use a smoky violet background, warm beauty light, subtle reflective accents, rich dimensional hair, premium character illustration."}, {"name": "Emerald Braided Fusion", "prompt": "Create an original fantasy hair portrait of an adult dark-skinned Black woman with radiant cocoa skin, oversized brown eyes, long lashes, and glossy nude lips. Style her hair in rich emerald-green waves mixed with golden micro-braids that sweep across one side of her forehead, finishing with two high twisted buns. Dress her in a minimalist black zip-front top. Deep forest-green and black background, warm gold rim lighting, refined high-fashion composition, realistic hair strands and smooth cinematic rendering."}]}, {"id": 10, "name": "Image 10 — Burgundy Braided Updo + Sunflowers", "image": "images/image-10.png", "presets": [{"name": "Sapphire Floral Goddess", "prompt": "Create a majestic editorial portrait of an adult dark-skinned Black woman with very deep ebony skin, elegantly sculpted features, almond-shaped dark eyes, metallic sapphire-and-silver eye makeup, long lashes, and glossy deep-neutral lips. Style her hair in hundreds of Caribbean-sapphire box braids gathered into a towering sculptural braided updo with several long braids framing her face. Decorate the updo with realistic white orchids and small sapphire-blue blossoms, arranged elegantly rather than excessively. Add intricate metallic-silver earrings and a delicate silver forehead ornament. Deep black-green blurred garden background, cinematic portrait lighting, rich melanin highlights, realistic braided texture, regal without crowns, museum-quality fantasy editorial photography."}, {"name": "Autumn Sunflower Braids", "prompt": "Create a powerful portrait of an adult Black woman with deep ebony skin, refined facial features, warm golden eye makeup, long lashes, and glossy bronze lips. Give her long burgundy box braids gathered into a tall artistic braided updo. Weave several realistic yellow sunflowers, tiny blue wildflowers, and tasteful gold hair ornaments through the braids. Add dramatic gold statement earrings. Use a dark forest-green background with shallow depth of field, warm directional lighting, realistic skin texture, high-fashion fantasy editorial mood."}, {"name": "White Rose Braided Editorial", "prompt": "Create an elegant adult dark-skinned Black woman with luminous ebony skin, defined brows, smoky charcoal eyes, subtle metallic-silver inner-corner highlights, and deep glossy brown lips. Her long black box braids form a sculptural high braided bun surrounded by several pristine white roses and delicate silver accessories. Long braids frame both sides of her face. Add silver statement earrings. Dark charcoal botanical background, moody diffused light, refined high-fashion portrait, sophisticated floral styling, realistic detailed rendering."}, {"name": "Sapphire Butterfly Braids", "prompt": "Create a sophisticated fantasy portrait of an adult Black woman with very deep brown skin, polished features, deep almond eyes, sapphire metallic eye makeup, dramatic lashes, and glossy cocoa lips. Style her hair in long black-and-deep-sapphire braids gathered into a dramatic high braided arrangement. Instead of flowers, place only three delicate metallic-silver butterflies naturally within the braids. Add long silver earrings and a slim silver forehead chain. Background of blurred deep-sapphire flowers and dark foliage, luxurious studio-quality portrait lighting, detailed skin and braid texture, feminine but powerful editorial composition."}]}, {"id": 11, "name": "Image 11 — Purple Cap + Long Wavy Hair", "image": "images/image-11.png", "presets": [{"name": "Caribbean Sapphire Cap Glam", "prompt": "Create a luxury close-up fashion portrait of an adult dark-skinned Black woman with luminous rich brown skin, sculpted cheekbones, and full glossy mocha-nude lips. Her eyes are partially concealed beneath a structured Caribbean-sapphire baseball cap tilted low over her face. Give her extremely long voluminous black waves with shimmering metallic-silver highlights flowing around her shoulders. One manicured hand gently touches the brim, showing elegant extra-long sapphire-and-silver nails and several bold silver statement rings. Add long crystal drop earrings and layered silver necklaces. Sleek black background with subtle sapphire illumination, high-end editorial beauty lighting, glossy realistic hair, polished semi-realistic digital character art."}, {"name": "Black Cap, Silver Waves", "prompt": "Create a glamorous adult Black woman with deep brown skin and full glossy nude lips wearing a structured black baseball cap pulled low enough to create mystery around the eyes. Give her long flowing black waves streaked with cool silver-gray highlights. Her hand lifts the brim slightly, revealing metallic-silver almond nails and several sophisticated statement rings. Add long silver drop earrings and layered silver jewelry over a fitted black top. Dark charcoal background, controlled silver rim lighting, moody editorial fashion portrait, hyper-detailed hair and jewelry."}, {"name": "Sapphire Creator Portrait", "prompt": "Create a polished fashion portrait of a confident adult Black female creator wearing a Caribbean-sapphire suede baseball cap with a minimal clean front panel and no text. Give her rich deep-brown skin, glossy neutral lips, dramatic lashes barely visible beneath the cap, and extremely long black waves with subtle sapphire highlights. One hand holds the brim while displaying shimmering-white manicured nails and silver rings. Dress her in a sleek black fitted top with layered silver necklaces. Sapphire-to-black gradient studio background, crisp luxury lighting, reflective silver accents, modern editorial styling, sophisticated semi-realistic 3D finish."}, {"name": "White Cap Luxury Look", "prompt": "Create a high-fashion portrait of an adult dark-skinned Black woman wearing a luminous white baseball cap pulled low over beautifully made-up eyes. Give her cascading waist-length black waves threaded with subtle metallic-silver strands. Her full lips are coated in glossy warm nude. Pose her hand elegantly near the brim, displaying long pearl-white nails with restrained silver details and several polished statement rings. Add sparkling silver earrings and layered delicate necklaces. Deep sapphire studio backdrop, white reflected light, soft silver rim lighting, editorial composition, premium digital realism."}]}];
+
+const styleGroups = {
+  "Character / Body":["adult Black woman","curvy adult Black woman","plus-size adult Black woman","full-body fashion portrait","close-up beauty portrait","waist-up portrait"],
+  "Skin Finish":["luminous deep-brown skin","warm caramel-brown skin","rich ebony skin","soft satin skin finish","glossy editorial skin","realistic skin texture"],
+  "Eyes + Makeup":["oversized expressive almond eyes","dramatic lashes","sapphire metallic eye makeup","silver inner-corner highlight","soft smoky glam","bold winged liner"],
+  "Hair Finish":["high-gloss hair","defined curls","sculpted baby hairs","waist-length hair","braided updo","space buns","micro-braids","rope braids"],
+  "Fashion Mood":["luxury editorial","streetwear glam","soft feminine casual","cozy lounge glam","night-out fashion","fantasy floral couture"],
+  "Lighting":["cinematic beauty lighting","soft daylight","silver rim lighting","sapphire ambient glow","golden-hour warmth","moody studio lighting"],
+  "Rendering":["semi-realistic 3D character art","polished digital illustration","fashion editorial realism","dreamy fantasy realism","high-detail beauty rendering"]
+};
+
+const typeStyles = ["bold bubble lettering","retro 70s lettering","chrome metallic typography","puffy 3D lettering","handwritten script","varsity block lettering","graffiti-inspired lettering","editorial serif","playful rounded sans serif","dripping candy lettering"];
+const typePlacement = ["centered headline","arched above subject","stacked behind subject","lower-third title","wrapped around composition","small chest-logo placement"];
+const typeEffects = ["metallic-silver shine","Caribbean-sapphire glow","white mirror-like shimmer","soft drop shadow","embossed 3D depth","clean outline","subtle sparkle accents"];
+const productFormats = ["T-shirt graphic","hoodie graphic","sweatshirt graphic","sticker design","PNG clipart","seamless repeating pattern","fabric pattern","wrapping paper pattern","notebook cover","poster / wall art"];
+const productTreatments = ["transparent background","isolated central graphic","seamless tile edges","print-ready composition","large readable typography","limited-color print treatment","clean negative space","no mockup, artwork only"];
+
+function esc(s){return s.replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
+
+
+function componentGroups(prompt){
+  const clauses = prompt
+    .replace(/\n+/g,' ')
+    .split(/(?<=[.!?])\s+|;\s+|,\s+(?=(?:and\s+)?(?:dress|style|give|add|place|pose|use|background|lighting|hair|makeup|wear|show)\b)/i)
+    .map(x=>x.trim())
+    .filter(x=>x.length>18);
+
+  const groups={};
+  const add=(g,t)=>{ if(!groups[g]) groups[g]=[]; if(!groups[g].includes(t)) groups[g].push(t); };
+
+  clauses.forEach(c=>{
+    const l=c.toLowerCase();
+    let g="Details";
+    if(/hair|braid|curl|ponytail|bun|bang|baby hair|waves|locs|pigtail/.test(l)) g="Hair";
+    else if(/eye|lash|lip|makeup|brow|cheek|skin|nose|face|glossy|complexion/.test(l)) g="Face + Makeup";
+    else if(/dress|wear|top|shirt|jersey|skirt|jeans|jogger|cardigan|shorts|outfit|sweatshirt|dress her/.test(l)) g="Outfit";
+    else if(/earring|necklace|watch|bracelet|ring|jewelry|headphone|glasses|ornament|butterfl|flower/.test(l)) g="Accessories";
+    else if(/pose|seated|sitting|standing|hand|reclining|walking|cross-legged|shoulder/.test(l)) g="Pose";
+    else if(/background|garden|studio|room|interior|sofa|bedroom|café|rooftop|forest|setting/.test(l)) g="Background";
+    else if(/light|glow|rim|shadow|bokeh|depth of field|cinematic|illumination|sunset|daylight/.test(l)) g="Lighting";
+    else if(/render|illustration|editorial|realism|3d|digital art|texture|finish|campaign|quality/.test(l)) g="Rendering";
+    add(g,c.replace(/\.$/,''));
+  });
+
+  return groups;
+}
+
+function renderPresetComponents(refId,presetIndex,prompt){
+  const groups=componentGroups(prompt);
+  return Object.entries(groups).map(([group,items])=>`
+    <div class="component-title">${esc(group)}</div>
+    ${items.map((text,idx)=>`
+      <label class="component-choice">
+        <input type="checkbox" class="componentcheck"
+          data-ref="${refId}" data-index="${presetIndex}" data-group="${esc(group)}"
+          value="${esc(text)}">
+        <span>${esc(text)}</span>
+      </label>`).join('')}
+  `).join('');
+}
+
+function renderRefs(){
+  const wrap=document.getElementById('referenceGrid');
+  wrap.innerHTML=REFS.map(r=>`
+    <article class="card">
+      <img src="${r.image}" alt="${esc(r.name)}"/>
+      <div class="card-body">
+        <label class="checkline"><input type="checkbox" class="refcheck" value="${r.id}"><strong>${esc(r.name)}</strong></label>
+        <div class="muted">Use this image as a visual reference. Presets below can be mixed together.</div>
+        ${r.presets.map((p,i)=>`
+          <div class="preset">
+            <label class="checkline">
+              <input type="checkbox" class="presetcheck" data-ref="${r.id}" data-index="${i}">
+              <span><strong>${esc(p.name)}</strong><small>Check this to include the complete preset</small></span>
+            </label>
+            <button type="button" class="component-toggle" data-ref="${r.id}" data-index="${i}">Mix individual pieces ▾</button>
+            <div class="component-box" id="components-${r.id}-${i}">
+              <div class="mini-actions">
+                <button type="button" class="mini-btn select-pieces" data-ref="${r.id}" data-index="${i}">Select all pieces</button>
+                <button type="button" class="mini-btn clear-pieces" data-ref="${r.id}" data-index="${i}">Clear pieces</button>
+              </div>
+              ${renderPresetComponents(r.id,i,p.prompt)}
+            </div>
+          </div>`).join('')}
+      </div>
+    </article>`).join('');
+}
+function renderChoices(container, items, cls){
+  document.getElementById(container).innerHTML=items.map(x=>`<label class="choice"><input type="checkbox" class="${cls}" value="${esc(x)}">${esc(x)}</label>`).join('');
+}
+function renderStyle(){
+  document.getElementById('styleOptions').innerHTML=Object.entries(styleGroups).map(([g,items])=>`
+    <div class="opt-card"><h3>${esc(g)}</h3>${items.map(x=>`<label class="choice"><input type="checkbox" class="stylecheck" value="${esc(x)}">${esc(x)}</label>`).join('')}</div>
+  `).join('');
+}
+renderRefs(); renderStyle();
+renderChoices('typeStyles',typeStyles,'typecheck');
+renderChoices('typePlacement',typePlacement,'typecheck');
+renderChoices('typeEffects',typeEffects,'typecheck');
+renderChoices('productFormats',productFormats,'productcheck');
+
+renderChoices('productTreatments',productTreatments,'productcheck');
+
+document.addEventListener('click',e=>{
+  if(e.target.classList.contains('component-toggle')){
+    const ref=e.target.dataset.ref, idx=e.target.dataset.index;
+    const box=document.getElementById(`components-${ref}-${idx}`);
+    box.classList.toggle('open');
+    e.target.textContent=box.classList.contains('open')?'Mix individual pieces ▴':'Mix individual pieces ▾';
+  }
+  if(e.target.classList.contains('select-pieces')){
+    const ref=e.target.dataset.ref, idx=e.target.dataset.index;
+    document.querySelectorAll(`.componentcheck[data-ref="${ref}"][data-index="${idx}"]`).forEach(x=>x.checked=true);
+  }
+  if(e.target.classList.contains('clear-pieces')){
+    const ref=e.target.dataset.ref, idx=e.target.dataset.index;
+    document.querySelectorAll(`.componentcheck[data-ref="${ref}"][data-index="${idx}"]`).forEach(x=>x.checked=false);
+  }
+});
+
+
+document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active'); document.getElementById(b.dataset.tab).classList.add('active');
+}));
+
+function selectedValues(cls){return [...document.querySelectorAll('.'+cls+':checked')].map(x=>x.value)}
+
+function buildPrompt(remix=false){
+  const refs=[...document.querySelectorAll('.refcheck:checked')].map(x=>Number(x.value));
+  const presetNodes=[...document.querySelectorAll('.presetcheck:checked')];
+  let presetPrompts=presetNodes.map(n=>REFS.find(r=>r.id===Number(n.dataset.ref)).presets[Number(n.dataset.index)].prompt);
+  if(remix && presetPrompts.length>1) presetPrompts=presetPrompts.sort(()=>Math.random()-.5);
+
+  const styles=selectedValues('stylecheck');
+  const components=selectedValues('componentcheck');
+  const types=selectedValues('typecheck');
+  const products=selectedValues('productcheck');
+  const exact=document.getElementById('textExact').value.trim();
+  const notes=document.getElementById('productNotes').value.trim();
+
+  let pieces=[];
+  if(refs.length) pieces.push(`Use the selected visual references as inspiration: ${refs.map(i=>'Image '+i).join(', ')}. Blend their visual qualities into one cohesive original design rather than copying any single image exactly.`);
+  if(presetPrompts.length) pieces.push(`Blend these selected preset directions:\n\n${presetPrompts.map((p,i)=>`${i+1}. ${p}`).join('\n\n')}`);
+  if(components.length) pieces.push(`Selected mix-and-match preset pieces: ${components.join('; ')}.`);
+  if(styles.length) pieces.push(`Additional selected style ingredients: ${styles.join('; ')}.`);
+  if(exact || types.length){
+    let t=`Typography layer: `;
+    if(exact) t+=`include the exact wording “${exact}”. `;
+    if(types.length) t+=`Mix these typography directions where they work together: ${types.join('; ')}. `;
+    t+=`Keep all visible wording correctly spelled, fully visible, unobstructed, and easy to read.`;
+    pieces.push(t);
+  }
+  if(products.length || notes){
+    let p=`Product/design use: `;
+    if(products.length) p+=products.join('; ')+'. ';
+    if(notes) p+=notes+'. ';
+    p+=`Keep the composition practical for the selected product format.`;
+    pieces.push(p);
+  }
+  pieces.push(`Final quality rules: adult subjects only; polished luxury finish; no crowns or tiaras unless explicitly requested; no fake HUDs, dashboards, analytics panels, scan lines, random data graphics, or clutter; preserve requested body type and proportions; keep the design clean, intentional, and professionally branded.`);
+  const result=pieces.join('\n\n');
+  document.getElementById('promptOutput').value=result;
+  document.getElementById('count').textContent=`${result.length.toLocaleString()} characters`;
+  updatePills();
+  return result;
+}
+
+function updatePills(){
+  const pills=[];
+  document.querySelectorAll('.refcheck:checked').forEach(x=>pills.push('Image '+x.value));
+  document.querySelectorAll('.presetcheck:checked').forEach(n=>{
+    const r=REFS.find(r=>r.id===Number(n.dataset.ref));
+    pills.push(r.presets[Number(n.dataset.index)].name);
+  });
+  const componentCount=document.querySelectorAll('.componentcheck:checked').length;
+  if(componentCount) pills.push(componentCount+' mixed preset piece'+(componentCount===1?'':'s'));
+  document.getElementById('selectedPills').innerHTML=pills.map(p=>`<span class="pill">${esc(p)}</span>`).join('');
+}
+
+document.getElementById('generateBtn').onclick=()=>{buildPrompt(); document.querySelector('[data-tab="output"]').click()};
+document.getElementById('copyBtn').onclick=async()=>{
+  const txt=document.getElementById('promptOutput').value || buildPrompt();
+  await navigator.clipboard.writeText(txt);
+  const b=document.getElementById('copyBtn'); const old=b.textContent; b.textContent='Copied ✓'; setTimeout(()=>b.textContent=old,1200);
+};
+document.getElementById('remixBtn').onclick=()=>{buildPrompt(true); document.querySelector('[data-tab="output"]').click()};
+document.getElementById('surpriseBtn').onclick=()=>{
+  document.querySelectorAll('input[type=checkbox]').forEach(x=>x.checked=false);
+  const refs=[...document.querySelectorAll('.refcheck')];
+  const chosen=[...refs].sort(()=>Math.random()-.5).slice(0,1+Math.floor(Math.random()*3));
+  chosen.forEach(r=>{
+    r.checked=true;
+    const id=Number(r.value);
+    const ps=[...document.querySelectorAll(`.presetcheck[data-ref="${id}"]`)];
+    ps[Math.floor(Math.random()*ps.length)].checked=true;
+  });
+  [...document.querySelectorAll('.stylecheck')].sort(()=>Math.random()-.5).slice(0,4).forEach(x=>x.checked=true);
+  buildPrompt(true); document.querySelector('[data-tab="output"]').click();
+};
+document.getElementById('clearBtn').onclick=()=>{
+  document.querySelectorAll('input[type=checkbox]').forEach(x=>x.checked=false);
+  document.getElementById('textExact').value=''; document.getElementById('productNotes').value='';
+  document.getElementById('promptOutput').value=''; document.getElementById('selectedPills').innerHTML=''; document.getElementById('count').textContent='';
+};
+</script>
+</body>
+</html>

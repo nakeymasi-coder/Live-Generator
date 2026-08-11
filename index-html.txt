@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Glam Reference Prompt Generator</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="shell">
+  <section class="hero">
+    <h1>Glam Reference Prompt Generator</h1>
+    <p>Select one or more image references, mix multiple presets, add style choices, then layer typography or turn the idea into a T-shirt design or repeating pattern. Everything is multi-select so you can remix freely—even individual pieces from different presets.</p>
+    <div class="toolbar">
+      <button class="btn primary" id="generateBtn">Generate Prompt</button>
+      <button class="btn" id="copyBtn">Copy Prompt</button>
+      <button class="btn" id="remixBtn">Remix</button>
+      <button class="btn" id="surpriseBtn">Surprise Me</button>
+      <button class="btn" id="clearBtn">Clear</button>
+    </div>
+  </section>
+
+  <div class="tabs">
+    <button class="tab active" data-tab="references">1. References + Presets</button>
+    <button class="tab" data-tab="style">2. Style Options</button>
+    <button class="tab" data-tab="typography">3. Typography Layer</button>
+    <button class="tab" data-tab="product">4. Product / Pattern</button>
+    <button class="tab" data-tab="output">5. Final Prompt</button>
+  </div>
+
+  <section class="panel active" id="references">
+    <div class="help"><strong>Beginner tip:</strong> Check the image references you like. Check a full preset, or open “Mix individual pieces” to take only the hair, makeup, outfit, pose, background, lighting, accessories, or rendering details you want. You can combine as many as you like.</div>
+    <div id="referenceGrid" class="grid"></div>
+  </section>
+
+  <section class="panel" id="style">
+    <h2 class="section-title">Style Options</h2>
+    <div class="options-wrap" id="styleOptions"></div>
+  </section>
+
+  <section class="panel" id="typography">
+    <h2 class="section-title">Typography Layer</h2>
+    <div class="help">Use this only when you want wording in the artwork. Leave it blank for image-only prompts.</div>
+    <div class="options-wrap">
+      <div class="opt-card">
+        <div class="field"><label>Exact wording</label><input id="textExact" placeholder="Example: CREATE IT. SELL IT. GLOW UP."/></div>
+        <div class="field"><label>Typography styles — choose more than one</label><div id="typeStyles"></div></div>
+      </div>
+      <div class="opt-card">
+        <div class="field"><label>Placement</label><div id="typePlacement"></div></div>
+        <div class="field"><label>Effects</label><div id="typeEffects"></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel" id="product">
+    <h2 class="section-title">Turn It Into a Product</h2>
+    <div class="options-wrap">
+      <div class="opt-card">
+        <h3>Output Format</h3>
+        <div id="productFormats"></div>
+      </div>
+      <div class="opt-card">
+        <h3>Design Treatment</h3>
+        <div id="productTreatments"></div>
+      </div>
+      <div class="opt-card">
+        <div class="field"><label>Extra product notes</label><textarea id="productNotes" placeholder="Example: transparent background, centered chest graphic, print-ready, no mockup"></textarea></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel" id="output">
+    <h2 class="section-title">Your Final Prompt</h2>
+    <div class="selected-bar" id="selectedPills"></div>
+    <div class="output">
+      <textarea id="promptOutput" placeholder="Your combined prompt will appear here..."></textarea>
+      <div class="count" id="count"></div>
+    </div>
+  </section>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,63 @@
+:root{
+  --blue:#168FEA; --deep:#103B63; --black:#171A1E; --silver:#dce2e8; --white:#fff;
+  --muted:#aeb9c4; --panel:#11161c; --panel2:#171e26; --line:#2a3540;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:linear-gradient(180deg,#0a0d11,#111821 55%,#0a0d11);color:var(--white)}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+.shell{max-width:1480px;margin:0 auto;padding:20px}
+.hero{background:linear-gradient(135deg,rgba(22,143,234,.18),rgba(16,59,99,.18) 55%,rgba(255,255,255,.04));border:1px solid #27465f;border-radius:24px;padding:24px;box-shadow:0 20px 60px rgba(0,0,0,.35)}
+.hero h1{margin:0 0 6px;font-size:clamp(28px,4vw,48px);letter-spacing:-.03em}
+.hero p{margin:0;color:#c6d2dc;max-width:900px;line-height:1.55}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+.btn{border:1px solid #3a4a58;background:#17212b;color:#fff;padding:11px 15px;border-radius:12px;font-weight:700}
+.btn.primary{background:var(--blue);border-color:var(--blue);color:#041018}
+.btn:hover{filter:brightness(1.08)}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0}
+.tab{background:#0f151c;border:1px solid var(--line);color:#d9e3ea;padding:10px 14px;border-radius:999px}
+.tab.active{background:var(--blue);border-color:var(--blue);color:#061017;font-weight:800}
+.panel{display:none}.panel.active{display:block}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(245px,1fr));gap:16px}
+.card{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:18px;overflow:hidden}
+.card img{width:100%;height:270px;object-fit:cover;background:#080b0f}
+.card-body{padding:14px}
+.card h3{margin:0 0 8px;font-size:17px}
+.muted{color:var(--muted);font-size:13px;line-height:1.45}
+.checkline{display:flex;gap:9px;align-items:flex-start;margin:9px 0}
+.checkline input{margin-top:3px;accent-color:var(--blue)}
+.preset{padding:10px;border:1px solid #2e3944;border-radius:12px;background:#10161c;margin-top:8px}
+.preset strong{font-size:14px}
+.preset small{display:block;color:#9fb0bd;margin-top:4px}
+.options-wrap{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px}
+.opt-card{background:#111820;border:1px solid var(--line);border-radius:16px;padding:14px}
+.opt-card h3{margin:0 0 10px}
+.choice{display:flex;gap:8px;align-items:flex-start;padding:6px 0;color:#dce6ee;font-size:14px}
+.choice input{accent-color:var(--blue);margin-top:2px}
+.field{display:grid;gap:6px;margin-top:10px}
+.field label{font-weight:700;font-size:13px}
+.field input,.field textarea,.field select{width:100%;background:#0b1117;border:1px solid #33414e;color:white;border-radius:10px;padding:10px}
+.field textarea{min-height:90px;resize:vertical}
+.output{background:#090e13;border:1px solid #2d3b47;border-radius:18px;padding:16px;margin-top:18px}
+.output textarea{width:100%;min-height:260px;background:#06090c;color:#eaf2f8;border:1px solid #26323c;border-radius:14px;padding:14px;line-height:1.55}
+.count{color:#9fb1bf;font-size:13px}
+.selected-bar{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}
+.pill{background:#152536;border:1px solid #27506f;color:#dff1ff;border-radius:999px;padding:7px 10px;font-size:12px}
+.help{background:#0c1821;border:1px solid #24465f;border-radius:14px;padding:12px;margin:14px 0;color:#cfe8fa}
+.section-title{margin:22px 0 12px;font-size:22px}
+
+.component-toggle{margin-top:9px;width:100%;text-align:left;background:#0b1218;border:1px solid #31404c;color:#dce8f0;padding:9px 10px;border-radius:10px;font-weight:700}
+.component-box{display:none;margin-top:8px;padding:10px;background:#0b1015;border:1px solid #27333d;border-radius:10px}
+.component-box.open{display:block}
+.component-title{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:#78c5ff;font-weight:800;margin:8px 0 3px}
+.component-choice{display:flex;gap:8px;align-items:flex-start;padding:5px 0;font-size:12px;line-height:1.4;color:#cbd8e1}
+.component-choice input{accent-color:var(--blue);margin-top:2px}
+.mini-actions{display:flex;gap:6px;margin:6px 0 4px;flex-wrap:wrap}
+.mini-btn{background:#12202b;color:#dceaf3;border:1px solid #2e4658;border-radius:8px;padding:6px 8px;font-size:11px;font-weight:700}
+
+@media(max-width:700px){
+  .shell{padding:12px}
+  .hero{padding:18px}
+  .card img{height:220px}
+  .toolbar .btn{flex:1 1 46%}
+}
